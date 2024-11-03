@@ -236,6 +236,22 @@ app.get('/api/orders', async (req, res) => {
     }
 });
 
+app.get('/api/tracking/:awbNo', async (req, res) => {
+    const awbNo = req.params.awbNo; // Remove the first character
+    try {
+      const { default: fetch } = await import('node-fetch');
+      const response = await fetch(`https://www.xpressbees.com/api/tracking/${awbNo}`, {
+        headers: {
+          'Referer': `https://www.xpressbees.com/shipment/tracking?awbNo=${awbNo}`
+        }
+      });
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch tracking data' });
+    }
+  });
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
