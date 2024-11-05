@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const { extractInvoices } = require('./invoiceExtractor');
 require('dotenv').config();
 
 const app = express();
@@ -251,6 +252,19 @@ app.get('/api/tracking/:awbNo', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch tracking data' });
     }
   });
+
+// New route for invoice extraction
+app.get('/api/extract-invoices', async (req, res) => {
+    try {
+      const invoices = await extractInvoices();
+      //console.log('Extracted invoices:', invoices);
+      res.json(invoices);
+    } catch (error) {
+      //console.error('Error extracting invoices:', error);
+      res.status(500).json({ error: 'Failed to extract invoices', details: error.message });
+    }
+  });
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
